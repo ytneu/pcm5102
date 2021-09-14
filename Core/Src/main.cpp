@@ -21,10 +21,17 @@
 #include "main.h"
 #include "i2s.h"
 #include "gpio.h"
+#include "dma.h"
+#include "tim.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "lookuptable.h"
+//#include "lookuptable.h"
+#include "wavetable.h"
+
+#include "Karplus.h"
+
+#include <cstdlib>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,6 +41,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define BUFF_LEN_DIV2 512 // Audio buffer length
+#define BUFF_LEN 1024     // Audio buffer length for both Left & Right Channels
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -55,6 +64,24 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+Karplus karplus;
+
+uint16_t ms_cnt = 0;
+
+uint16_t audiobuff[BUFF_LEN];
+
+uint16_t once = 1;
+
+void make_sound(uint16_t index) {
+	uint16_t threshold = index + BUFF_LEN_DIV2;
+
+	while(index <= threshold ) {
+		karplus.get_karplus(0.5f);
+		audiobuff[index] = (uint16_t)(karplus.out * 30000.0f);
+		audiobuff[index+1] = (uint16_t)(karplus.out * 30000.0f);
+		index += 2;
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -85,16 +112,24 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_I2S2_Init();
+  MX_TIM10_Init();
+//  MX_TIM10_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_Base_Start_IT(&htim10);
+  HAL_I2S_Transmit_DMA(&hi2s2, (uint16_t *)audiobuff, BUFF_LEN);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_I2S_Transmit(&hi2s2, (uint16_t*)sine, 1024, HAL_MAX_DELAY);
+	  if(ms_cnt > 20000) {
+		  ms_cnt = 0;
+		  karplus.restore_freq((float)(rand() % 100 + 50));
+	  }
+//	  HAL_I2S_Transmit(&hi2s2, (uint16_t*)sine, 1024, HAL_MAX_DELAY);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -154,7 +189,22 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+	if(htim->Instance == TIM10){
+		ms_cnt++;
 
+	}
+}
+
+void HAL_I2S_TxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
+{
+  make_sound(0);
+}
+
+void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s)
+{
+  make_sound(BUFF_LEN_DIV2);
+}
 /* USER CODE END 4 */
 
 /**

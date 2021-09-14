@@ -1,0 +1,8 @@
+Karplus.cpp:12:1:Karplus::Karplus()	16	static
+Karplus.cpp:17:1:Karplus::~Karplus()	16	static
+Karplus.cpp:17:1:virtual Karplus::~Karplus()	16	static
+Karplus.cpp:21:6:void Karplus::restore(uint16_t)	16	static
+Karplus.cpp:32:6:void Karplus::restore_freq(uint16_t)	16	static
+Karplus.cpp:44:6:void Karplus::restore_noise()	24	static
+Karplus.cpp:51:6:void Karplus::get_karplus(float)	16	static
+Karplus.cpp:63:6:void Karplus::get_envelope()	16	static
