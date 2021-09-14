@@ -1,3 +1,4 @@
+"Core/Src/Delay.o"
 "Core/Src/Karplus.o"
 "Core/Src/dma.o"
 "Core/Src/gpio.o"

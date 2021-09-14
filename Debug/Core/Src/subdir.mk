@@ -15,6 +15,7 @@ C_SRCS += \
 ../Core/Src/tim.c 
 
 CPP_SRCS += \
+../Core/Src/Delay.cpp \
 ../Core/Src/Karplus.cpp \
 ../Core/Src/main.cpp 
 
@@ -30,6 +31,7 @@ C_DEPS += \
 ./Core/Src/tim.d 
 
 OBJS += \
+./Core/Src/Delay.o \
 ./Core/Src/Karplus.o \
 ./Core/Src/dma.o \
 ./Core/Src/gpio.o \
@@ -43,11 +45,14 @@ OBJS += \
 ./Core/Src/tim.o 
 
 CPP_DEPS += \
+./Core/Src/Delay.d \
 ./Core/Src/Karplus.d \
 ./Core/Src/main.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
+Core/Src/Delay.o: ../Core/Src/Delay.cpp
+	arm-none-eabi-g++ "$<" -mcpu=cortex-m4 -std=gnu++14 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-threadsafe-statics -fno-use-cxa-atexit -Wall -fstack-usage -MMD -MP -MF"Core/Src/Delay.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 Core/Src/Karplus.o: ../Core/Src/Karplus.cpp
 	arm-none-eabi-g++ "$<" -mcpu=cortex-m4 -std=gnu++14 -g3 -DUSE_HAL_DRIVER -DSTM32F401xC -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-threadsafe-statics -fno-use-cxa-atexit -Wall -fstack-usage -MMD -MP -MF"Core/Src/Karplus.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 Core/Src/dma.o: ../Core/Src/dma.c

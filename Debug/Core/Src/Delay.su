@@ -1,0 +1,4 @@
+Delay.cpp:10:1:Delay::Delay()	16	static
+Delay.cpp:15:1:Delay::~Delay()	16	static
+Delay.cpp:15:1:virtual Delay::~Delay()	16	static
+Delay.cpp:19:6:void Delay::process(uint16_t)	16	static

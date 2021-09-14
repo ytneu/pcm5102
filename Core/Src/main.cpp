@@ -30,6 +30,8 @@
 #include "wavetable.h"
 
 #include "Karplus.h"
+#include "Delay.h"
+
 
 #include <cstdlib>
 /* USER CODE END Includes */
@@ -65,6 +67,7 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 Karplus karplus;
+Delay delay;
 
 uint16_t ms_cnt = 0;
 
@@ -77,8 +80,10 @@ void make_sound(uint16_t index) {
 
 	while(index <= threshold ) {
 		karplus.get_karplus(0.5f);
-		audiobuff[index] = (uint16_t)(karplus.out * 30000.0f);
-		audiobuff[index+1] = (uint16_t)(karplus.out * 30000.0f);
+		uint16_t val = (uint16_t)(karplus.out * 30000.0f);
+		delay.process(val);
+		audiobuff[index] = (uint16_t)(delay.out);
+		audiobuff[index+1] = (uint16_t)(delay.out);
 		index += 2;
 	}
 }
